@@ -23,16 +23,16 @@ export function ForecastView({ forecast }: ForecastViewProps) {
         <PikachuCharacter size="small" />
       </motion.div>
 
-      {/* Forecast Cards - Horizontal Scrollable Grid */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden">
-        <div className="flex gap-3 h-full pb-8">
+      {/* Forecast Cards - Full Width Grid */}
+      <div className="flex-1 overflow-x-auto overflow-y-hidden pb-8">
+        <div className="h-full flex gap-3 min-w-full px-1">
           {forecast.map((day, index) => (
             <motion.div
               key={day.date}
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: index * 0.08 }}
-              className="bg-white/25 backdrop-blur-lg rounded-2xl p-3 lg:p-4 border-3 border-white/30 shadow-xl flex-shrink-0 w-40 lg:w-44 flex flex-col justify-between"
+              className="bg-white/25 backdrop-blur-lg rounded-2xl p-3 lg:p-4 border-3 border-white/30 shadow-xl flex-1 min-w-[150px] flex flex-col justify-between"
             >
               <div>
                 <div className="text-center mb-3">

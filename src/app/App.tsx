@@ -21,7 +21,15 @@ export default function App() {
   const handleUserInteraction = () => {
     if (!hasInteracted && wakeLockSupported) {
       setHasInteracted(true);
-      requestWakeLock();
+      // Request wake lock asynchronously without blocking
+      setTimeout(() => {
+        try {
+          requestWakeLock();
+        } catch (err) {
+          // Silently ignore wake lock errors
+          console.log('Wake lock request ignored due to environment restrictions');
+        }
+      }, 0);
     }
   };
 
@@ -69,17 +77,25 @@ export default function App() {
   }, [currentView]);
 
   const requestFullscreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if ((elem as any).webkitRequestFullscreen) {
-      (elem as any).webkitRequestFullscreen();
-    } else if ((elem as any).msRequestFullscreen) {
-      (elem as any).msRequestFullscreen();
+    try {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(() => {
+          console.log('Fullscreen request failed or not supported');
+        });
+      } else if ((elem as any).webkitRequestFullscreen) {
+        (elem as any).webkitRequestFullscreen();
+      } else if ((elem as any).msRequestFullscreen) {
+        (elem as any).msRequestFullscreen();
+      }
+      
+      // Request Wake Lock asynchronously after fullscreen attempt
+      setTimeout(() => {
+        handleUserInteraction();
+      }, 100);
+    } catch (err) {
+      console.log('Fullscreen error:', err);
     }
-    
-    // Request Wake Lock when entering fullscreen
-    handleUserInteraction();
   };
 
   return (

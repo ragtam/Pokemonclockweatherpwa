@@ -37,15 +37,17 @@ export const useWakeLock = () => {
       });
     } catch (err: any) {
       const errorMessage = err?.name || 'Unknown error';
-      console.error('Wake Lock request failed:', err);
       
-      // Handle specific error cases
+      // Don't log these as errors if blocked by permissions policy
       if (errorMessage === 'NotAllowedError') {
-        setError('Wake Lock blocked by browser policy or permissions');
+        console.log('Wake Lock blocked by browser policy or permissions - this is normal in iframe environments');
+        setError(null); // Don't show error to user in this case
       } else if (errorMessage === 'NotSupportedError') {
+        console.log('Wake Lock not supported');
         setError('Wake Lock not supported');
       } else {
-        setError(`Wake Lock error: ${errorMessage}`);
+        console.log(`Wake Lock request failed: ${errorMessage}`);
+        setError(null); // Don't show errors to user
       }
     }
   };
