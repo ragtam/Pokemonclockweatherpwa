@@ -1,0 +1,23 @@
+{
+  "_motion-KOvJNe0X.js": {
+    "file": "assets/motion-KOvJNe0X.js",
+    "name": "motion"
+  },
+  "_vendor-OskAq2oX.js": {
+    "file": "assets/vendor-OskAq2oX.js",
+    "name": "vendor"
+  },
+  "index.html": {
+    "file": "assets/index-CP5_na8d.js",
+    "name": "index",
+    "src": "index.html",
+    "isEntry": true,
+    "imports": [
+      "_vendor-OskAq2oX.js",
+      "_motion-KOvJNe0X.js"
+    ],
+    "css": [
+      "assets/index-BAdMATJE.css"
+    ]
+  }
+}
