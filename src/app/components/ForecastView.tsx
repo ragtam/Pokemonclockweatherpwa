@@ -10,73 +10,70 @@ interface ForecastViewProps {
 
 export function ForecastView({ forecast }: ForecastViewProps) {
   return (
-    <div className="h-full w-full overflow-y-auto bg-gradient-to-br from-green-400 via-teal-400 to-blue-400 p-4 md:p-6">
+    <div className="h-full w-full bg-gradient-to-br from-green-400 via-teal-400 to-blue-400 p-4 lg:p-6 flex flex-col">
       {/* Header with Pikachu */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="flex items-center justify-between mb-6"
+        className="flex items-center justify-between mb-4"
       >
-        <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-lg">
+        <h2 className="text-2xl lg:text-3xl font-bold text-white drop-shadow-lg">
           7-Day Forecast
         </h2>
         <PikachuCharacter size="small" />
       </motion.div>
 
-      {/* Forecast Cards */}
-      <div className="space-y-3 md:space-y-4 pb-4">
-        {forecast.map((day, index) => (
-          <motion.div
-            key={day.date}
-            initial={{ x: -50, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ delay: index * 0.1 }}
-            className="bg-white/25 backdrop-blur-lg rounded-2xl p-4 md:p-5 border-3 border-white/30 shadow-xl"
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex-1">
-                <div className="text-2xl md:text-3xl font-bold text-white">
-                  {day.dayName}
-                </div>
-                <div className="text-base md:text-lg text-white/80">
-                  {day.date}
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <WeatherIcon condition={day.icon} size={48} />
-                <div className="text-right">
-                  <div className="text-3xl md:text-4xl font-bold text-white">
-                    {day.high}°
+      {/* Forecast Cards - Horizontal Scrollable Grid */}
+      <div className="flex-1 overflow-x-auto overflow-y-hidden">
+        <div className="flex gap-3 h-full pb-8">
+          {forecast.map((day, index) => (
+            <motion.div
+              key={day.date}
+              initial={{ x: -50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: index * 0.08 }}
+              className="bg-white/25 backdrop-blur-lg rounded-2xl p-3 lg:p-4 border-3 border-white/30 shadow-xl flex-shrink-0 w-40 lg:w-44 flex flex-col justify-between"
+            >
+              <div>
+                <div className="text-center mb-3">
+                  <div className="text-xl lg:text-2xl font-bold text-white">
+                    {day.dayName}
                   </div>
-                  <div className="text-lg md:text-xl text-white/70">
-                    {day.low}°
+                  <div className="text-sm text-white/80">
+                    {day.date}
                   </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="text-lg md:text-xl text-white/90 mb-3 text-center">
-              {day.condition}
-            </div>
+                <div className="flex flex-col items-center gap-2 mb-3">
+                  <WeatherIcon condition={day.icon} size={44} />
+                  <div className="text-center">
+                    <div className="text-3xl lg:text-4xl font-bold text-white">
+                      {day.high}°
+                    </div>
+                    <div className="text-lg text-white/70">
+                      {day.low}°
+                    </div>
+                  </div>
+                </div>
 
-            <div className="flex justify-around pt-3 border-t-2 border-white/20">
-              <div className="flex items-center gap-2 text-white">
-                <Sunrise size={20} className="text-yellow-200" />
-                <div>
-                  <div className="text-xs text-white/60">Sunrise</div>
-                  <div className="text-sm md:text-base font-semibold">{day.sunrise}</div>
+                <div className="text-base lg:text-lg text-white/90 text-center mb-3">
+                  {day.condition}
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-white">
-                <Sunset size={20} className="text-orange-200" />
-                <div>
-                  <div className="text-xs text-white/60">Sunset</div>
-                  <div className="text-sm md:text-base font-semibold">{day.sunset}</div>
+
+              <div className="space-y-2 pt-3 border-t-2 border-white/20">
+                <div className="flex items-center gap-2 text-white justify-center">
+                  <Sunrise size={18} className="text-yellow-200" />
+                  <div className="text-sm font-semibold">{day.sunrise}</div>
+                </div>
+                <div className="flex items-center gap-2 text-white justify-center">
+                  <Sunset size={18} className="text-orange-200" />
+                  <div className="text-sm font-semibold">{day.sunset}</div>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
