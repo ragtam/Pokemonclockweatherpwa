@@ -58,7 +58,7 @@ export default function App() {
     // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/sw.js')
+        .register('/Pokemonclockweatherpwa/sw.js')
         .then((registration) => {
           console.log('✅ Service Worker registered:', registration);
         })
