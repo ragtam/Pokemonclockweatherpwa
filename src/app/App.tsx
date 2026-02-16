@@ -92,7 +92,7 @@ export default function App() {
       const targetScroll = index * container.offsetWidth;
       container.scrollTo({
         left: targetScroll,
-        behavior: 'smooth'
+        behavior: 'auto'
       });
     }
   };
@@ -183,7 +183,7 @@ export default function App() {
       {/* Native Scroll Views */}
       <div 
         ref={scrollContainerRef}
-        className="relative h-screen w-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth"
+        className="relative h-screen w-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory bg-blue-400"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <style>{`
