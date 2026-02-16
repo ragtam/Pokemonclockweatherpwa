@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Maximize, Info } from 'lucide-react';
-import { SwipeableViews } from './components/SwipeableViews';
 import { ClockView } from './components/ClockView';
 import { ForecastView } from './components/ForecastView';
 import { PikachuView } from './components/PikachuView';
@@ -16,6 +15,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const { isSupported: wakeLockSupported, isActive: wakeLockActive, error: wakeLockError, enableWakeLock } = useWakeLock();
   const [hasInteracted, setHasInteracted] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Request Wake Lock on first user interaction
   const handleUserInteraction = () => {
@@ -85,13 +85,43 @@ export default function App() {
     };
   }, [hasInteracted, wakeLockSupported]);
 
+  // Scroll to view function
+  const scrollToView = (index: number) => {
+    if (scrollContainerRef.current) {
+      const container = scrollContainerRef.current;
+      const targetScroll = index * container.offsetWidth;
+      container.scrollTo({
+        left: targetScroll,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Update current view based on scroll position
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollLeft = container.scrollLeft;
+      const width = container.offsetWidth;
+      const newView = Math.round(scrollLeft / width);
+      if (newView !== currentView) {
+        setCurrentView(newView);
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [currentView]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' && currentView > 0) {
-        setCurrentView(currentView - 1);
+        scrollToView(currentView - 1);
       } else if (e.key === 'ArrowRight' && currentView < 2) {
-        setCurrentView(currentView + 1);
+        scrollToView(currentView + 1);
       } else if (e.key === 'f' || e.key === 'F') {
         requestFullscreen();
       }
@@ -140,7 +170,7 @@ export default function App() {
             <div className="text-white">
               <p className="font-semibold text-sm mb-0.5">Pokemon Weather Clock! ⚡</p>
               <p className="text-xs text-white/90">
-                Swipe left/right to navigate • {(() => {
+                Scroll left/right to navigate • {(() => {
                   if (wakeLockActive) return '✅ Screen staying awake';
                   if (wakeLockSupported) return '⏳ Activating screen wake lock...';
                   return 'Wake Lock not supported';
@@ -159,12 +189,45 @@ export default function App() {
         </div>
       )}
 
-      {/* Swipeable Views */}
-      <SwipeableViews onViewChange={setCurrentView}>
-        <ClockView weather={currentWeather} />
-        <ForecastView forecast={forecast} />
-        <PikachuView />
-      </SwipeableViews>
+      {/* Native Scroll Views */}
+      <div 
+        ref={scrollContainerRef}
+        className="relative h-screen w-screen overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <style>{`
+          .scroll-container::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
+        <div className="flex h-full w-[300vw]">
+          <div className="h-full w-screen flex-shrink-0 snap-start snap-always overflow-hidden">
+            <ClockView weather={currentWeather} />
+          </div>
+          <div className="h-full w-screen flex-shrink-0 snap-start snap-always overflow-hidden">
+            <ForecastView forecast={forecast} />
+          </div>
+          <div className="h-full w-screen flex-shrink-0 snap-start snap-always overflow-hidden">
+            <PikachuView />
+          </div>
+        </div>
+      </div>
+
+      {/* Page Indicators */}
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-10">
+        {[0, 1, 2].map((index) => (
+          <button
+            key={index}
+            onClick={() => scrollToView(index)}
+            className={`rounded-full transition-all duration-300 ${
+              index === currentView
+                ? 'w-6 h-2.5 bg-white'
+                : 'w-2.5 h-2.5 bg-white/50'
+            }`}
+            aria-label={`Go to view ${index + 1}`}
+          />
+        ))}
+      </div>
 
       {/* Loading Screen */}
       {isLoading && <LoadingScreen />}
