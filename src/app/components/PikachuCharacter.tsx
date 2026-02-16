@@ -90,7 +90,7 @@ export function PikachuCharacter({ size = 'medium', variant = 'yellow' }: Pikach
     const blinkInterval = setInterval(() => {
       setBlinkState(true);
       setTimeout(() => setBlinkState(false), 200);
-    }, 3000 + Math.random() * 2000);
+    }, 5000 + Math.random() * 2000);
 
     return () => {
       clearInterval(poseInterval);

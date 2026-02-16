@@ -109,7 +109,7 @@ export const useWakeLock = () => {
           console.log('🔄 Wake Lock lost, re-requesting...');
           requestWakeLock();
         }
-      }, 30000); // Check every 30 seconds
+      }, 60 * 1000); // Check every 60 seconds
     }
   };
 

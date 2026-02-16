@@ -11,6 +11,7 @@ interface ClockViewProps {
 
 export function ClockView({ weather }: ClockViewProps) {
   const [time, setTime] = useState(new Date());
+  const [backgroundVariant, setBackgroundVariant] = useState(0); // 0: black, 1: diagonal gradient, 2: top gradient
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -20,20 +21,65 @@ export function ClockView({ weather }: ClockViewProps) {
     return () => clearInterval(timer);
   }, []);
 
+  // Cycle through backgrounds: 45 min black, 7 min diagonal, 7 min top
+  useEffect(() => {
+    const durations = [45 * 60 * 1000, 7 * 60 * 1000, 7 * 60 * 1000]; // in milliseconds
+    let currentVariant = 0;
+    
+    const scheduleNext = () => {
+      const duration = durations[currentVariant];
+      return setTimeout(() => {
+        currentVariant = (currentVariant + 1) % 3;
+        setBackgroundVariant(currentVariant);
+        scheduleNext();
+      }, duration);
+    };
+    
+    const timer = scheduleNext();
+    return () => clearTimeout(timer);
+  }, []);
+
   const hours = time.getHours();
   const minutes = time.getMinutes();
-  const seconds = time.getSeconds();
+
+  // Define background styles
+  const getBackground = () => {
+    switch(backgroundVariant) {
+      case 1:
+        return 'linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #1a1a2e 100%)';
+      case 2:
+        return 'linear-gradient(180deg, #1a0a1a 0%, #2d1b2e 20%, #1a1a2e 40%, #0a0a0a 70%, #000000 100%)';
+      default:
+        return '#000000';
+    }
+  };
 
   if (!weather) {
     return (
-      <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400">
+      <motion.div 
+        className="h-full w-full flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: 1,
+          background: getBackground()
+        }}
+        transition={{ duration: 3, ease: "easeInOut" }}
+      >
         <p className="text-white text-xl">Loading weather...</p>
-      </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-3 lg:p-4 bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 overflow-hidden">
+    <motion.div 
+      className="h-full w-full flex items-center justify-center p-3 lg:p-4 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: 1,
+        background: getBackground()
+      }}
+      transition={{ duration: 3, ease: "easeInOut" }}
+    >
       <div className="w-full h-full flex flex-row items-center justify-between gap-3 lg:gap-6 max-w-7xl">
         {/* Left Side: Clock and Pikachu */}
         <div className="flex flex-col items-center justify-center flex-1 min-w-0">
@@ -63,9 +109,9 @@ export function ClockView({ weather }: ClockViewProps) {
                 {minutes.toString().padStart(2, '0')}
               </span>
             </div>
-            <div className="text-xl lg:text-2xl text-white/80 font-medium tabular-nums mt-1">
+            {/* <div className="text-xl lg:text-2xl text-white/80 font-medium tabular-nums mt-1">
               {seconds.toString().padStart(2, '0')}
-            </div>
+            </div> */}
             {/* Date Display */}
             <div className="mt-2 text-white/80 text-sm lg:text-base font-medium">
               {time.toLocaleDateString('en-US', { 
@@ -120,6 +166,6 @@ export function ClockView({ weather }: ClockViewProps) {
           </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
