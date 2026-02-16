@@ -56,7 +56,7 @@ export function ForecastView({ forecast }: ForecastViewProps) {
       </motion.div>
 
       {/* Forecast Cards - Full Width Grid */}
-      <div className="flex-1 overflow-hidden min-h-0">
+      <div className="flex-1 overflow-hidden min-h-0 mb-8">
         <div className="h-full flex gap-2 lg:gap-3">
           {displayForecast.map((day, index) => (
             <motion.div
