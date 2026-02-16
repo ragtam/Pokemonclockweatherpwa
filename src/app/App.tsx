@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Maximize, Info } from 'lucide-react';
+import { Maximize, Info, MapPin } from 'lucide-react';
 import { SwipeableViews } from './components/SwipeableViews';
 import { ClockView } from './components/ClockView';
 import { ForecastView } from './components/ForecastView';
 import { PikachuView } from './components/PikachuView';
 import { LoadingScreen } from './components/LoadingScreen';
 import { useWakeLock } from './hooks/useWakeLock';
-import { getMockCurrentWeather, getMock7DayForecast } from './utils/mockWeatherData';
+import { getWeatherForCurrentLocation, CurrentWeather, DailyForecast } from './services/weatherService';
 
 export default function App() {
-  const [currentWeather, setCurrentWeather] = useState(getMockCurrentWeather());
-  const [forecast, setForecast] = useState(getMock7DayForecast());
+  const [currentWeather, setCurrentWeather] = useState<CurrentWeather | null>(null);
+  const [forecast, setForecast] = useState<DailyForecast[]>([]);
   const [showInfo, setShowInfo] = useState(true);
   const [currentView, setCurrentView] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
   const { isSupported: wakeLockSupported, isActive: wakeLockActive, error: wakeLockError, requestWakeLock } = useWakeLock();
   const [hasInteracted, setHasInteracted] = useState(false);
 
@@ -34,29 +35,50 @@ export default function App() {
   };
 
   useEffect(() => {
+    // Fetch weather data
+    const loadWeatherData = async () => {
+      try {
+        setIsLoading(true);
+        console.log('🌍 Fetching weather data...');
+        const data = await getWeatherForCurrentLocation();
+        console.log('✅ Weather data loaded successfully:', data.current.location);
+        setCurrentWeather(data.current);
+        setForecast(data.forecast);
+        setWeatherError(null);
+      } catch (error) {
+        console.error('❌ Failed to load weather data:', error);
+        setWeatherError('Unable to load weather data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadWeatherData();
+
     // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
-        .register('/Pokemonclockweatherpwa/sw.js')
+        .register('/sw.js')
         .then((registration) => {
-          console.log('Service Worker registered:', registration);
+          console.log('✅ Service Worker registered:', registration);
         })
         .catch((error) => {
-          console.log('Service Worker registration failed:', error);
+          console.log('⚠️  Service Worker registration failed:', error);
         });
     }
 
-    // Hide loading screen after a short delay
-    const loadingTimer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-
-    // Hide info message after 5 seconds
+    // Hide info message after 8 seconds
     const infoTimer = setTimeout(() => {
       setShowInfo(false);
-    }, 5000);
+    }, 8000);
 
-    // Keyboard navigation
+    return () => {
+      clearTimeout(infoTimer);
+    };
+  }, []);
+
+  // Refresh weather data when currentView changes (optional)
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' && currentView > 0) {
         setCurrentView(currentView - 1);
@@ -68,12 +90,7 @@ export default function App() {
     };
 
     window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      clearTimeout(loadingTimer);
-      clearTimeout(infoTimer);
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentView]);
 
   const requestFullscreen = () => {

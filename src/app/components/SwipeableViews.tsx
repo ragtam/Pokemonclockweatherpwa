@@ -39,7 +39,7 @@ export function SwipeableViews({ children, onViewChange }: SwipeableViewsProps) 
   };
 
   return (
-    <div className="relative h-screen w-screen overflow-hidden" ref={containerRef}>
+    <div className="relative h-screen w-screen overflow-hidden touch-pan-y" ref={containerRef}>
       {/* Views Container */}
       <motion.div
         className="flex h-full w-full"
@@ -53,7 +53,7 @@ export function SwipeableViews({ children, onViewChange }: SwipeableViewsProps) 
         {children.map((child, index) => (
           <div
             key={index}
-            className="h-full w-screen flex-shrink-0"
+            className="h-full w-screen flex-shrink-0 overflow-hidden"
           >
             {child}
           </div>

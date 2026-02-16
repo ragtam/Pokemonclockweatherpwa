@@ -2,14 +2,14 @@
   "name": "Pokemon Weather Clock",
   "short_name": "PokeClock",
   "description": "Pokemon-themed clock and weather display",
-  "start_url": "/Pokemonclockweatherpwa/",
+  "start_url": "/",
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#FFDE00",
   "theme_color": "#3B4CCA",
   "icons": [
     {
-      "src": "/Pokemonclockweatherpwa/icon.svg",
+      "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

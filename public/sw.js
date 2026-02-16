@@ -1,11 +1,11 @@
 const CACHE_NAME = 'pokemon-weather-clock-v1';
 const urlsToCache = [
-  '/Pokemonclockweatherpwa/',
-  '/Pokemonclockweatherpwa/index.html',
-  '/Pokemonclockweatherpwa/src/app/App.tsx',
-  '/Pokemonclockweatherpwa/src/styles/index.css',
-  '/Pokemonclockweatherpwa/src/styles/tailwind.css',
-  '/Pokemonclockweatherpwa/src/styles/theme.css'
+  '/',
+  '/index.html',
+  '/src/app/App.tsx',
+  '/src/styles/index.css',
+  '/src/styles/tailwind.css',
+  '/src/styles/theme.css'
 ];
 
 self.addEventListener('install', (event) => {
