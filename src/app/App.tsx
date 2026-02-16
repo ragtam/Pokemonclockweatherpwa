@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Maximize, Info, MapPin } from 'lucide-react';
+import { Maximize, Info } from 'lucide-react';
 import { SwipeableViews } from './components/SwipeableViews';
 import { ClockView } from './components/ClockView';
 import { ForecastView } from './components/ForecastView';
@@ -14,23 +14,18 @@ export default function App() {
   const [showInfo, setShowInfo] = useState(true);
   const [currentView, setCurrentView] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [weatherError, setWeatherError] = useState<string | null>(null);
-  const { isSupported: wakeLockSupported, isActive: wakeLockActive, error: wakeLockError, requestWakeLock } = useWakeLock();
+  const { isSupported: wakeLockSupported, isActive: wakeLockActive, error: wakeLockError, enableWakeLock } = useWakeLock();
   const [hasInteracted, setHasInteracted] = useState(false);
 
   // Request Wake Lock on first user interaction
   const handleUserInteraction = () => {
     if (!hasInteracted && wakeLockSupported) {
       setHasInteracted(true);
-      // Request wake lock asynchronously without blocking
-      setTimeout(() => {
-        try {
-          requestWakeLock();
-        } catch (err) {
-          // Silently ignore wake lock errors
-          console.log('Wake lock request ignored due to environment restrictions');
-        }
-      }, 0);
+      console.log('🎯 User interaction detected, enabling persistent wake lock');
+      // Enable persistent wake lock with auto-retry
+      enableWakeLock().catch(() => {
+        console.log('Wake lock initial request failed, will retry automatically');
+      });
     }
   };
 
@@ -44,10 +39,8 @@ export default function App() {
         console.log('✅ Weather data loaded successfully:', data.current.location);
         setCurrentWeather(data.current);
         setForecast(data.forecast);
-        setWeatherError(null);
       } catch (error) {
         console.error('❌ Failed to load weather data:', error);
-        setWeatherError('Unable to load weather data');
       } finally {
         setIsLoading(false);
       }
@@ -77,7 +70,22 @@ export default function App() {
     };
   }, []);
 
-  // Refresh weather data when currentView changes (optional)
+  // Listen for multiple user interaction events to activate wake lock ASAP
+  useEffect(() => {
+    const events = ['click', 'touchstart', 'keydown', 'mousemove', 'touchmove'];
+    
+    events.forEach(event => {
+      document.addEventListener(event, handleUserInteraction, { once: true, passive: true });
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleUserInteraction);
+      });
+    };
+  }, [hasInteracted, wakeLockSupported]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft' && currentView > 0) {
@@ -89,8 +97,8 @@ export default function App() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => globalThis.removeEventListener('keydown', handleKeyDown);
   }, [currentView]);
 
   const requestFullscreen = () => {
@@ -106,17 +114,15 @@ export default function App() {
         (elem as any).msRequestFullscreen();
       }
       
-      // Request Wake Lock asynchronously after fullscreen attempt
-      setTimeout(() => {
-        handleUserInteraction();
-      }, 100);
+      // Ensure Wake Lock is active after fullscreen
+      handleUserInteraction();
     } catch (err) {
       console.log('Fullscreen error:', err);
     }
   };
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden" onClick={handleUserInteraction}>
+    <div className="relative w-screen h-screen overflow-hidden">
       {/* Fullscreen Button */}
       <button
         onClick={requestFullscreen}
@@ -134,7 +140,11 @@ export default function App() {
             <div className="text-white">
               <p className="font-semibold text-sm mb-0.5">Pokemon Weather Clock! ⚡</p>
               <p className="text-xs text-white/90">
-                Swipe left/right to navigate • {wakeLockActive ? 'Screen will stay awake ✓' : wakeLockSupported ? 'Tap to activate screen wake' : 'Wake Lock not supported'}
+                Swipe left/right to navigate • {(() => {
+                  if (wakeLockActive) return '✅ Screen staying awake';
+                  if (wakeLockSupported) return '⏳ Activating screen wake lock...';
+                  return 'Wake Lock not supported';
+                })()}
                 {wakeLockError && <span className="block text-xs mt-1 text-yellow-300">Note: {wakeLockError}</span>}
               </p>
             </div>
