@@ -23,8 +23,6 @@ export function ClockView({ weather }: ClockViewProps) {
   const hours = time.getHours();
   const minutes = time.getMinutes();
   const seconds = time.getSeconds();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
 
   if (!weather) {
     return (
@@ -48,27 +46,24 @@ export function ClockView({ weather }: ClockViewProps) {
             <PikachuCharacter size="medium" />
           </motion.div>
 
-          {/* Clock Display */}
+          {/* Clock Display - 24h format, larger size */}
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="text-center"
           >
-            <div className="flex items-end justify-center gap-0.5 lg:gap-1">
-              <span className="text-6xl lg:text-8xl font-bold text-white drop-shadow-2xl tabular-nums">
-                {displayHours.toString().padStart(2, '0')}
+            <div className="flex items-center justify-center gap-0.5 lg:gap-1">
+              <span className="text-7xl lg:text-9xl font-bold text-white drop-shadow-2xl tabular-nums">
+                {hours.toString().padStart(2, '0')}
               </span>
-              <span className="text-6xl lg:text-8xl font-bold text-white drop-shadow-2xl animate-pulse">
+              <span className="text-7xl lg:text-9xl font-bold text-white drop-shadow-2xl animate-pulse">
                 :
               </span>
-              <span className="text-6xl lg:text-8xl font-bold text-white drop-shadow-2xl tabular-nums">
+              <span className="text-7xl lg:text-9xl font-bold text-white drop-shadow-2xl tabular-nums">
                 {minutes.toString().padStart(2, '0')}
               </span>
-              <span className="text-2xl lg:text-3xl font-bold text-white/90 drop-shadow-lg mb-2 lg:mb-3">
-                {ampm}
-              </span>
             </div>
-            <div className="text-lg lg:text-xl text-white/80 font-medium tabular-nums mt-1">
+            <div className="text-xl lg:text-2xl text-white/80 font-medium tabular-nums mt-1">
               {seconds.toString().padStart(2, '0')}
             </div>
             {/* Date Display */}

@@ -29,9 +29,9 @@ export function PikachuView() {
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
           className="bg-white/30 backdrop-blur-sm rounded-xl lg:rounded-2xl p-3 lg:p-4 border-2 lg:border-3 border-white/40 shadow-2xl"
         >
-          <PikachuCharacter size="medium" />
+          <PikachuCharacter size="medium" variant="rainbow" />
           <div className="text-center mt-1.5 text-white font-bold text-base lg:text-lg">
-            Happy
+            Rainbow
           </div>
         </motion.div>
 
@@ -41,9 +41,9 @@ export function PikachuView() {
           transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
           className="bg-white/30 backdrop-blur-sm rounded-xl lg:rounded-2xl p-3 lg:p-4 border-2 lg:border-3 border-white/40 shadow-2xl"
         >
-          <PikachuCharacter size="medium" />
+          <PikachuCharacter size="medium" variant="yellow" />
           <div className="text-center mt-1.5 text-white font-bold text-base lg:text-lg">
-            Excited
+            Classic
           </div>
         </motion.div>
 
@@ -53,9 +53,9 @@ export function PikachuView() {
           transition={{ delay: 0.6, type: "spring", stiffness: 200 }}
           className="bg-white/30 backdrop-blur-sm rounded-xl lg:rounded-2xl p-3 lg:p-4 border-2 lg:border-3 border-white/40 shadow-2xl"
         >
-          <PikachuCharacter size="medium" />
+          <PikachuCharacter size="medium" variant="green" />
           <div className="text-center mt-1.5 text-white font-bold text-base lg:text-lg">
-            Cheerful
+            Nature
           </div>
         </motion.div>
       </div>

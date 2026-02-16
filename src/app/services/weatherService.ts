@@ -49,14 +49,12 @@ const getWeatherIcon = (code: number): { icon: string; condition: string } => {
   return { icon: 'partly-cloudy', condition: 'Unknown' };
 };
 
-// Format time from ISO string to AM/PM format
+// Format time from ISO string to 24h format (HH:MM)
 const formatTime = (isoString: string): string => {
   const date = new Date(isoString);
-  let hours = date.getHours();
+  const hours = date.getHours();
   const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12 || 12;
-  return `${hours}:${minutes.toString().padStart(2, '0')} ${ampm}`;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 };
 
 // Get location name from coordinates using reverse geocoding

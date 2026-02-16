@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 
 interface PikachuCharacterProps {
   size?: 'small' | 'medium' | 'large';
+  variant?: 'yellow' | 'rainbow' | 'green';
 }
 
 const pikachuPoses = [
@@ -56,7 +57,26 @@ const pikachuPoses = [
   }
 ];
 
-export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
+// Color schemes for different variants
+const colorSchemes = {
+  yellow: {
+    body: '#FFDE00',
+    tail: '#B8860B',
+    cheeks: '#FF6B6B',
+  },
+  rainbow: {
+    body: 'url(#rainbowGradient)',
+    tail: 'url(#rainbowGradient)',
+    cheeks: '#FF1493',
+  },
+  green: {
+    body: '#4ADE80',
+    tail: '#16A34A',
+    cheeks: '#FCD34D',
+  },
+};
+
+export function PikachuCharacter({ size = 'medium', variant = 'yellow' }: PikachuCharacterProps) {
   const [currentPose, setCurrentPose] = useState(0);
   const [blinkState, setBlinkState] = useState(false);
 
@@ -79,6 +99,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
   }, []);
 
   const pose = pikachuPoses[currentPose];
+  const colors = colorSchemes[variant];
   
   const sizeMap = {
     small: 60,
@@ -98,10 +119,24 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       transition={{ duration: 0.5 }}
       key={currentPose}
     >
+      {/* Rainbow Gradient Definition */}
+      {variant === 'rainbow' && (
+        <defs>
+          <linearGradient id="rainbowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#FF0080" />
+            <stop offset="20%" stopColor="#FF00FF" />
+            <stop offset="40%" stopColor="#8000FF" />
+            <stop offset="60%" stopColor="#00BFFF" />
+            <stop offset="80%" stopColor="#00FF80" />
+            <stop offset="100%" stopColor="#FFFF00" />
+          </linearGradient>
+        </defs>
+      )}
+
       {/* Tail */}
       <motion.path
         d={pose.tail}
-        fill="#B8860B"
+        fill={colors.tail}
         stroke="#000"
         strokeWidth="1.5"
         initial={{ rotate: -5 }}
@@ -113,7 +148,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       {/* Body */}
       <path
         d={pose.body}
-        fill="#FFDE00"
+        fill={colors.body}
         stroke="#000"
         strokeWidth="2"
       />
@@ -121,7 +156,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       {/* Left Ear */}
       <path
         d={pose.leftEar}
-        fill="#FFDE00"
+        fill={colors.body}
         stroke="#000"
         strokeWidth="2"
       />
@@ -133,7 +168,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       {/* Right Ear */}
       <path
         d={pose.rightEar}
-        fill="#FFDE00"
+        fill={colors.body}
         stroke="#000"
         strokeWidth="2"
       />
@@ -145,7 +180,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       {/* Left Arm */}
       <path
         d={pose.leftArm}
-        fill="#FFDE00"
+        fill={colors.body}
         stroke="#000"
         strokeWidth="1.5"
       />
@@ -153,7 +188,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
       {/* Right Arm */}
       <path
         d={pose.rightArm}
-        fill="#FFDE00"
+        fill={colors.body}
         stroke="#000"
         strokeWidth="1.5"
       />
@@ -177,7 +212,7 @@ export function PikachuCharacter({ size = 'medium' }: PikachuCharacterProps) {
           cx={cheek.cx}
           cy={cheek.cy}
           r="4"
-          fill="#FF6B6B"
+          fill={colors.cheeks}
           opacity="0.8"
         />
       ))}
