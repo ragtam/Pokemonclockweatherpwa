@@ -60,29 +60,50 @@ const formatTime = (isoString: string): string => {
 // Get location name from coordinates using reverse geocoding
 const getLocationName = async (lat: number, lon: number): Promise<string> => {
   try {
+    // Using OpenStreetMap Nominatim API for reverse geocoding
     const response = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&count=1`,
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
       {
         method: 'GET',
         mode: 'cors',
         cache: 'default',
+        headers: {
+          'User-Agent': 'PokemonClockWeatherPWA/1.0'
+        }
       }
     );
     
     if (!response.ok) {
+      console.warn(`Geocoding API error: ${response.status}`);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
-    if (data.results && data.results.length > 0) {
-      const result = data.results[0];
-      return result.name || result.admin1 || 'Unknown Location';
+    console.log('Geocoding API response:', data);
+    
+    if (data && data.address) {
+      const addr = data.address;
+      
+      // Build a readable location string
+      // Priority: city > town > village > county > state
+      const cityName = addr.city || addr.town || addr.village || addr.municipality || 
+                       addr.county || addr.state || addr.region;
+      const countryCode = addr.country_code?.toUpperCase();
+      
+      if (cityName) {
+        // Return city with country code for clarity (e.g., "New York, US")
+        return countryCode ? `${cityName}, ${countryCode}` : cityName;
+      }
+      
+      return addr.country || 'Unknown Location';
+    } else {
+      console.warn('No address data from geocoding API');
     }
   } catch (error) {
     console.warn('Failed to get location name:', error);
   }
-  // Return coordinates as fallback
-  return `${lat.toFixed(1)}°, ${lon.toFixed(1)}°`;
+  // Return a more user-friendly fallback
+  return 'Current Location';
 };
 
 // Get user's current position

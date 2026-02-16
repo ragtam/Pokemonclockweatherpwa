@@ -153,15 +153,6 @@ export default function App() {
 
   return (
     <div className="relative w-screen h-screen overflow-hidden">
-      {/* Fullscreen Button */}
-      <button
-        onClick={requestFullscreen}
-        className="fixed top-2 right-2 z-50 bg-white/20 backdrop-blur-lg p-2 rounded-full border-2 border-white/30 shadow-lg hover:bg-white/30 transition-all"
-        aria-label="Enter fullscreen"
-      >
-        <Maximize size={20} className="text-white" />
-      </button>
-
       {/* Info Banner */}
       {showInfo && (
         <div className="fixed top-2 left-2 right-16 z-40 bg-blue-600/90 backdrop-blur-lg p-3 rounded-xl border-2 border-white/30 shadow-xl">
